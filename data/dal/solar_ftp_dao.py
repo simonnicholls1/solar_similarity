@@ -3,13 +3,19 @@ import csv
 import io
 import requests
 from config.config import params
+from data.dal.solar_dao import SolarDAO
 
-class SolarFTPDAO():
+class SolarFTPDAO(SolarDAO):
 
     def __init__(self, env):
         self.url = params[env]['solar_url']
         self.sep = " "
         self.columns = ['year', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+        self._solar_data = self.get_solar_data()
+
+    @property
+    def solar_data(self):
+        return self._solar_data
 
     def get_solar_data(self, drop_non_complete_current_year=True):
         file = self.get_file_from_url()
