@@ -5,6 +5,7 @@ import requests
 from config.config import params
 from data.dal.solar_dao import SolarDAO
 
+
 class SolarFTPDAO(SolarDAO):
 
     def __init__(self, env):
@@ -17,7 +18,12 @@ class SolarFTPDAO(SolarDAO):
     def solar_data(self):
         return self._solar_data
 
-    def get_solar_data(self, drop_non_complete_current_year=True):
+    def get_solar_data(self, drop_non_complete_current_year: bool = True):
+        """
+        Returns solar data in a pandas data frame
+
+        :param bool drop_non_complete_current_year: Drop the current year as it has placement values
+        """
         file = self.get_file_from_url()
         data = self.parse_solar_csv(file)
         df = pd.DataFrame(data=data, columns=self.columns)
@@ -34,9 +40,13 @@ class SolarFTPDAO(SolarDAO):
         buff = io.StringIO(r.text)
         return buff
 
-    def parse_solar_csv(self, solar_csv_file):
-        '''Specific parser for the solar csv file
-           which has a specific layout'''
+    def parse_solar_csv(self, solar_csv_file: io.StringIO):
+        """
+        Parse the specific solar CSV file, includes protection
+        for issues with data
+
+        :param io.StringIO solar_csv_file: The csv file in buffer
+        """
 
         reader = csv.reader(solar_csv_file)
 
@@ -48,6 +58,7 @@ class SolarFTPDAO(SolarDAO):
         if no_years < 0:
             raise ValueError("Start year ({0}) and end year ({1}) issue".format(start_year, end_year))
 
+        # Now read the data from the file
         data = []
         for i in range(0, no_years+1):
             line = next(reader)[0].split()

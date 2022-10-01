@@ -7,14 +7,18 @@ from services.analysis.analysis import Analysis
 import logging
 import matplotlib.pyplot as plt
 
+
+logger = logging.getLogger()
 ENV = 'PROD'
 
 #Loading of data
-print(params[ENV]['solar_url'])
+print('Fetch URL {0}'.format(params[ENV]['solar_url']))
 solar_ftp = SolarFTPDAO(ENV)
 solar_data = solar_ftp.solar_data
 solar_years = list(solar_data.index.values)
+print('Head of solar data:')
 print(solar_data.head())
+
 
 #Setup Analysis class
 analysis_svc = Analysis()
